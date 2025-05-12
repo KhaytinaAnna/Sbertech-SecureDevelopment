@@ -1,4 +1,4 @@
-# Sbertech-SecureDevelopment
+<img width="291" alt="Снимок экрана 2025-05-12 в 03 05 18" src="https://github.com/user-attachments/assets/47ce46dc-df81-4deb-9053-aece004d1035" /># Sbertech-SecureDevelopment
 
 ## Контрольное суммирование файлов dlib
 
@@ -75,4 +75,44 @@ $ afl-fuzz -i fuzz/image/in -o fuzz/image/out -- dlib/tools/imglab/build/imglab 
 Запускаем тест на несколько часов, чтоб получить более информативный отчет и получаем что-то похожее:
 
 <img width="554" alt="Снимок экрана 2025-04-15 в 09 11 19" src="https://github.com/user-attachments/assets/09445cf4-a20b-48d0-b877-75669d282e12" />
+
+## Сбор покрытия
+
+Необходимо пересобрать проект dlib с новыми добавленными флагами:
+
+```
+$ cmake -DCMAKE_C_COMPILER=afl-clang-fast -DCMAKE_CXX_COMPILER=afl-clang-fast++
+      -DCMAKE_CXX_FLAGS="-fsanitize=address,leak,undefined -g -fprofile-arcs -ftest-coverage"
+      -DCMAKE_C_FLAGS="-fsanitize=address,leak,undefined -g -fprofile-arcs -ftest-coverage"
+      -DCMAKE_BUILD_TYPE=Coverage
+```
+
+Далее пересобираем аналогично при помощи make и запускаем AFL++, как до этого. После прогона собираем все тестовые данные, на которых хотим посмотреть покрытие:
+
+```
+$ mkdir coverage_data
+$ cp fuzz/image/out/default/queue/* coverage_data/
+```
+
+На этих тестовых данных запускаем бинарный файл и генерируем .gcda файлы:
+
+```
+$ cd coverage_data
+
+$ for file in *; do
+      ../dlib/tools/imglab/build/imglab --stats "$file"
+  done
+```
+
+<img width="291" alt="Снимок экрана 2025-05-12 в 03 05 32" src="https://github.com/user-attachments/assets/f2e15f5a-b618-4c86-9b5f-e12cbe2a20d7" />
+
+<img width="237" alt="Снимок экрана 2025-05-12 в 03 06 06" src="https://github.com/user-attachments/assets/db3fbfd6-85b6-473d-b566-7fbf48056374" />
+
+Для просмотра процента покрытия вводим команду:
+
+```
+$ llvm-cov <ИМЯ_ФАЙЛА>.gcda
+```
+
+![image](https://github.com/user-attachments/assets/94049418-e91d-4f26-96d5-3f07e596b862)
 
