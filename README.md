@@ -1,4 +1,4 @@
-<img width="291" alt="Снимок экрана 2025-05-12 в 03 05 18" src="https://github.com/user-attachments/assets/47ce46dc-df81-4deb-9053-aece004d1035" /># Sbertech-SecureDevelopment
+# Sbertech-SecureDevelopment
 
 ## Контрольное суммирование файлов dlib
 
